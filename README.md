@@ -16,7 +16,7 @@ pipx install expanse
 ```
 ## Usage
 
-Usage instructions go here.
+`expanse parquet export.xml`
 
 ## Features
 

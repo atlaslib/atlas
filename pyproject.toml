@@ -1,6 +1,6 @@
 [project]
 name = "expanse"
-version = "0.2.1"
+version = "0.2.2"
 description = "turn apple health export.xml into parquet"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -19,12 +19,14 @@ dependencies = [
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
+[project.scripts]
+expanse = "expanse.cli:main"
+
 [project.urls]
 Homepage = "https://github.com/tosh/expanse"
 Changelog = "https://github.com/tosh/expanse/releases"
 Issues = "https://github.com/tosh/expanse/issues"
 CI = "https://github.com/tosh/expanse/actions"
-
 
 [project.optional-dependencies]
 test = ["pytest"]
