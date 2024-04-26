@@ -1,6 +1,28 @@
 [project]
-name = "placeholder"
+name = "expanse"
 version = "0.1"
+description = "null"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [{name = "Thomas Schranz"}]
+license = {text = "Apache-2.0"}
+classifiers = [
+    "License :: OSI Approved :: Apache Software License"
+]
+dependencies = [
+
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project.urls]
+Homepage = "https://github.com/tosh/expanse"
+Changelog = "https://github.com/tosh/expanse/releases"
+Issues = "https://github.com/tosh/expanse/issues"
+CI = "https://github.com/tosh/expanse/actions"
+
 
 [project.optional-dependencies]
 test = ["pytest"]
