@@ -2,12 +2,9 @@
 <div align="center">
   <img alt="expanse"
        height="320px"
-       src="https://github.com/tosh/expanse/assets/14825/65e075ea-3832-4d8e-9e4e-fc0499b2ae6"
+       src="https://github.com/tosh/expanse/assets/14825/d8c8e3ed-442c-4545-a6a2-e3d70b770db0"
        style="border-radius: 6%">
 </div>
-
-![_5bc57362-5492-406b-be73-7b44802f43fb](https://github.com/tosh/expanse/assets/14825/d8c8e3ed-442c-4545-a6a2-e3d70b770db0)
-
 
 # expanse
 
