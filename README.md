@@ -5,31 +5,20 @@
 [![Changelog](https://img.shields.io/github/v/release/tosh/expanse?include_prereleases&label=changelog)](https://github.com/tosh/expanse/releases)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/tosh/expanse/blob/main/LICENSE)
 
-null
+Expanse lets you explore your Apple Health data.
 
 ## Installation
 
-Install this library using `pip`:
+Install expanse using `pipx`:
 ```bash
-pip install expanse
+brew install pipx
+pipx install expanse
 ```
 ## Usage
 
 Usage instructions go here.
 
-## Development
+## Features
 
-To contribute to this library, first checkout the code. Then create a new virtual environment:
-```bash
-cd expanse
-python -m venv venv
-source venv/bin/activate
-```
-Now install the dependencies and test dependencies:
-```bash
-pip install -e '.[test]'
-```
-To run the tests:
-```bash
-pytest
-```
+- turn export.xml into a simple parquet file
+
