@@ -6,6 +6,9 @@
        style="border-radius: 6%">
 </div>
 
+![_5bc57362-5492-406b-be73-7b44802f43fb](https://github.com/tosh/expanse/assets/14825/d8c8e3ed-442c-4545-a6a2-e3d70b770db0)
+
+
 # expanse
 
 Expanse lets you explore your Apple Health data.
