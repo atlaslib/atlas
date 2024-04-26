@@ -1,6 +1,6 @@
 [project]
 name = "expanse"
-version = "0.2"
+version = "0.2.0"
 description = "turn apple health export.xml into parquet"
 readme = "README.md"
 requires-python = ">=3.8"
