@@ -49,8 +49,6 @@ DESCRIBE TABLE `ah.parquet`
 ```
 
 ```
-Query id: b2ba2921-f40e-4509-9bed-9b258cd7b79d
-
 ┌─name────┬─type────────────────────┬─default_type─┬─default_expression─┬─comment─┬─codec_expression─┬─ttl_expression─┐
 │ type    │ Nullable(String)        │              │                    │         │                  │                │
 │ start   │ Nullable(DateTime64(6)) │              │                    │         │                  │                │
@@ -58,8 +56,6 @@ Query id: b2ba2921-f40e-4509-9bed-9b258cd7b79d
 │ created │ Nullable(DateTime64(6)) │              │                    │         │                  │                │
 │ value   │ Nullable(String)        │              │                    │         │                  │                │
 └─────────┴─────────────────────────┴──────────────┴────────────────────┴─────────┴──────────────────┴────────────────┘
-
-5 rows in set. Elapsed: 0.009 sec. 
 ```
 
 What kind of "types" do we have and how many?
@@ -74,8 +70,6 @@ ORDER BY count DESC
 ```
 
 ```
-Query id: ce9cbd6d-f282-4196-ab07-b2d8ad9c0011
-
 ┌─type───────────────────────────┬──count─┐
 │ ActiveEnergyBurned             │ 879902 │
 │ HeartRate                      │ 451854 │
@@ -125,6 +119,25 @@ Query id: ce9cbd6d-f282-4196-ab07-b2d8ad9c0011
 │ HKDataTypeSleepDurationGoal    │      1 │
 └────────────────────────────────┴────────┘
 ```
+
+What's our total step count?
+
+> [!NOTE]  
+> The `value` column is type `Nullable(String)` so we have to cast `toFloat64` to sum up the step values.
+
+```sql
+SELECT sum(toFloat64(value))
+FROM `ah.parquet`
+WHERE type = 'StepCount'
+```
+
+```
+┌─sum(toFloat64(value))─┐
+│              30295811 │
+└───────────────────────┘
+```
+
+30.295.811 (30.29 million) steps. That's a lot of steps!
 
 ## How to get the Apple Health export.xml file
 
