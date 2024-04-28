@@ -24,6 +24,108 @@ brew install pipx
 pipx install expanse
 ```
 
+## Explore
+
+First we create the `.parquet` file from the `export.xml` file.
+
+```bash
+expanse parquet export.xml -o ah.parquet
+```
+
+We can explore the data in many ways.
+
+It is just a table/dataframe/parquet file with 5 columns.
+
+But here we'll use `clickhouse local`:
+
+```bash
+clickhouse local
+```
+
+Let's take a look at the table.
+
+```sql
+DESCRIBE TABLE `ah.parquet`
+```
+
+```
+Query id: b2ba2921-f40e-4509-9bed-9b258cd7b79d
+
+┌─name────┬─type────────────────────┬─default_type─┬─default_expression─┬─comment─┬─codec_expression─┬─ttl_expression─┐
+│ type    │ Nullable(String)        │              │                    │         │                  │                │
+│ start   │ Nullable(DateTime64(6)) │              │                    │         │                  │                │
+│ end     │ Nullable(DateTime64(6)) │              │                    │         │                  │                │
+│ created │ Nullable(DateTime64(6)) │              │                    │         │                  │                │
+│ value   │ Nullable(String)        │              │                    │         │                  │                │
+└─────────┴─────────────────────────┴──────────────┴────────────────────┴─────────┴──────────────────┴────────────────┘
+
+5 rows in set. Elapsed: 0.009 sec. 
+```
+
+What kind of "types" do we have and how many?
+
+```sql
+SELECT
+    type,
+    COUNT(*) AS count
+FROM `ah.parquet`
+GROUP BY type
+ORDER BY count DESC
+```
+
+```
+Query id: ce9cbd6d-f282-4196-ab07-b2d8ad9c0011
+
+┌─type───────────────────────────┬──count─┐
+│ ActiveEnergyBurned             │ 879902 │
+│ HeartRate                      │ 451854 │
+│ BasalEnergyBurned              │ 289031 │
+│ DistanceWalkingRunning         │ 260500 │
+│ StepCount                      │ 217384 │
+│ PhysicalEffort                 │  69747 │
+│ AppleExerciseTime              │  61363 │
+│ AppleStandTime                 │  58309 │
+│ EnvironmentalAudioExposure     │  44535 │
+│ SleepAnalysis                  │  36599 │
+│ WalkingStepLength              │  28281 │
+│ WalkingSpeed                   │  28281 │
+│ RespiratoryRate                │  27829 │
+│ AppleStandHour                 │  25877 │
+│ FlightsClimbed                 │  22690 │
+│ WalkingDoubleSupportPercentage │  21900 │
+│ WalkingAsymmetryPercentage     │  13820 │
+│ HeartRateVariabilitySDNN       │  11961 │
+│ OxygenSaturation               │   4912 │
+│ StairDescentSpeed              │   4718 │
+│ StairAscentSpeed               │   4249 │
+│ DistanceCycling                │   2890 │
+│ TimeInDaylight                 │   2403 │
+│ HeadphoneAudioExposure         │   2323 │
+│ RestingHeartRate               │   1399 │
+│ WalkingHeartRateAverage        │   1176 │
+│ DistanceSwimming               │    455 │
+│ SwimmingStrokeCount            │    455 │
+│ AppleSleepingWristTemperature  │    442 │
+│ RunningSpeed                   │    391 │
+│ VO2Max                         │    366 │
+│ RunningPower                   │    173 │
+│ DietaryCaffeine                │    171 │
+│ AppleWalkingSteadiness         │    138 │
+│ SixMinuteWalkTestDistance      │    122 │
+│ HeartRateRecoveryOneMinute     │     76 │
+│ RunningVerticalOscillation     │     74 │
+│ RunningGroundContactTime       │     67 │
+│ RunningStrideLength            │     54 │
+│ MindfulSession                 │     34 │
+│ HighHeartRateEvent             │     18 │
+│ AudioExposureEvent             │     14 │
+│ BodyMass                       │     14 │
+│ Height                         │      5 │
+│ Fatigue                        │      1 │
+│ HKDataTypeSleepDurationGoal    │      1 │
+└────────────────────────────────┴────────┘
+```
+
 ## How to get the Apple Health export.xml file
 
 ![group-figma-small](https://github.com/tosh/expanse/assets/14825/e48971a3-bc13-4496-8fe2-5dcd292c9019)
