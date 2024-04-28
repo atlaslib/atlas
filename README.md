@@ -27,7 +27,7 @@ pipx install expanse
 
 ## How to get the Apple Health export.xml file
 
-![apple-health-export](https://github.com/tosh/expanse/assets/14825/587a9272-f6b2-455c-b040-e0e44cf1fdb1)
+![group-figma-small](https://github.com/tosh/expanse/assets/14825/e48971a3-bc13-4496-8fe2-5dcd292c9019)
 
 - open the Apple **Health** app on iOS
 - tap on your **profile picture** (or initials) at the top right
