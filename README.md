@@ -24,6 +24,22 @@ Install expanse using `pipx`:
 brew install pipx
 pipx install expanse
 ```
+
+## How to get the Apple Health export.xml file
+
+![apple-health-export](https://github.com/tosh/expanse/assets/14825/587a9272-f6b2-455c-b040-e0e44cf1fdb1)
+
+- open the Apple **Health** app on iOS
+- tap on your **profile picture** (or initials) at the top right
+- tap on **Export All Health Data**
+- tap on **Export**
+- **wait** a few seconds to a few minutes (~3min for 10 years of data)
+- **get the export.zip** archive via Airdrop to a Mac (or save to Files)
+
+The **export.xml** file is in the **export.zip** archive.
+
+See: [Apple Support on how to export Apple Health and Fitness in XML format](https://support.apple.com/en-gb/guide/iphone/iph5ede58c3d/ios#:~:text=Share%20your%20health%20and%20fitness%20data%20in%20XML%20format)
+
 ## Usage
 
 `expanse parquet export.xml`
