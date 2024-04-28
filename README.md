@@ -36,7 +36,8 @@ pipx install expanse
 - **wait** a few seconds to a few minutes (~3min for 10 years of data)
 - **get the export.zip** archive via Airdrop to a Mac (or save to Files)
 
-The **export.xml** file is in the **export.zip** archive.
+> [!NOTE]  
+> The **export.xml** file is **in** the **export.zip** archive.
 
 See: [Apple Support on how to export Apple Health and Fitness in XML format](https://support.apple.com/en-gb/guide/iphone/iph5ede58c3d/ios#:~:text=Share%20your%20health%20and%20fitness%20data%20in%20XML%20format)
 
