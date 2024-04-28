@@ -42,13 +42,13 @@ You can expand the **export.zip** file by double-clicking on it.
 
 This creates a directory named **apple_health_export** and in it is the **export.xml** file.
 
-<img src="https://github.com/tosh/expanse/assets/14825/c519f3e9-23bf-4f90-909f-30a07b286d57" width="50%">
+<img src="https://github.com/tosh/expanse/assets/14825/c519f3e9-23bf-4f90-909f-30a07b286d57" width="66%">
 
-<img src="https://github.com/tosh/expanse/assets/14825/64409b40-c87f-4bbc-9df8-778d758517fc" width="50%">
+<img src="https://github.com/tosh/expanse/assets/14825/64409b40-c87f-4bbc-9df8-778d758517fc" width="66%">
 
-<img src="https://github.com/tosh/expanse/assets/14825/0f83fc2d-6728-4023-8074-75517a2af49f" width="50%">
+<img src="https://github.com/tosh/expanse/assets/14825/0f83fc2d-6728-4023-8074-75517a2af49f" width="66%">
 
-<img src="https://github.com/tosh/expanse/assets/14825/35e9d36e-9a7a-46aa-b6da-1420d05b1f20" width="50%">
+<img src="https://github.com/tosh/expanse/assets/14825/35e9d36e-9a7a-46aa-b6da-1420d05b1f20" width="66%">
 
 
 See: [Apple Support on how to export Apple Health and Fitness in XML format](https://support.apple.com/en-gb/guide/iphone/iph5ede58c3d/ios#:~:text=Share%20your%20health%20and%20fitness%20data%20in%20XML%20format)
