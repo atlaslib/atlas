@@ -18,9 +18,14 @@ Atlas lets you explore your Apple Health data.
 
 ## Installation
 
-Install expanse using `pip`:
+Install Atlas using `pip`:
 ```bash
 pip install atlas-db
+```
+
+Upgrade Atlas using `pip`:
+```bash
+pip install atlas-db --upgrade
 ```
 
 ## Explore
