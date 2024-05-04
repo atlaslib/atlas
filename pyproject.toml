@@ -1,6 +1,6 @@
 [project]
-name = "expanse"
-version = "0.2.4"
+name = "atlaslib"
+version = "0.2.5"
 description = "turn apple health export.xml into parquet"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -20,14 +20,14 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project.scripts]
-expanse = "expanse.cli:cli"
+atlas = "atlas.cli:cli"
 
 
 [project.urls]
-Homepage = "https://github.com/tosh/expanse"
-Changelog = "https://github.com/tosh/expanse/releases"
-Issues = "https://github.com/tosh/expanse/issues"
-CI = "https://github.com/tosh/expanse/actions"
+Homepage = "https://github.com/atlaslib/atlas"
+Changelog = "https://github.com/atlaslib/atlas/releases"
+Issues = "https://github.com/atlaslib/atlas/issues"
+CI = "https://github.com/atlaslib/atlas/actions"
 
 [project.optional-dependencies]
 test = ["pytest"]
