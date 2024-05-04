@@ -1,7 +1,7 @@
 import click
 import os
 import datetime as dt
-from expanse.apple_health import to_df, write_parquet
+from apple_health import to_df, write_parquet
 
 
 @click.group()
