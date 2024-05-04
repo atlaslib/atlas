@@ -28,6 +28,11 @@ Upgrade Atlas using `pip`:
 pip install atlas-db --upgrade
 ```
 
+Uninstall Expanse (old name) using `pipx`:
+```bash
+pipx uninstall expanse
+```
+
 ## Explore
 
 First we create the `.parquet` file from the `export.xml` file.
