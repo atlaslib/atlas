@@ -2,7 +2,7 @@
 <div align="center">
   <img alt="Atlas"
        height="320px"
-       src="https://github.com/tosh/expanse/assets/14825/0f766786-31c9-434e-ae65-66cf7331a27b">
+       src="https://github.com/atlaslib/atlas/assets/14825/0f766786-31c9-434e-ae65-66cf7331a27b">
 </div>
 
 # Atlas
@@ -11,16 +11,16 @@ Atlas lets you explore your Apple Health data.
 
 ---
 
-[![PyPI](https://img.shields.io/pypi/v/expanse.svg)](https://pypi.org/project/expanse/)
-[![Tests](https://github.com/tosh/expanse/actions/workflows/test.yml/badge.svg)](https://github.com/tosh/expanse/actions/workflows/test.yml)
-[![Changelog](https://img.shields.io/github/v/release/tosh/expanse?include_prereleases&label=changelog)](https://github.com/tosh/expanse/releases)
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/tosh/expanse/blob/main/LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/atlas-db.svg)](https://pypi.org/project/atlas-db/)
+[![Tests](https://github.com/atlaslib/atlas/actions/workflows/test.yml/badge.svg)](https://github.com/atlaslib/atlas/actions/workflows/test.yml)
+[![Changelog](https://img.shields.io/github/v/release/atlaslib/atlas?include_prereleases&label=changelog)](https://github.com/atlaslib/atlas/releases)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/atlaslib/atlas/blob/main/LICENSE)
 
 ## Installation
 
 Install expanse using `pip`:
 ```bash
-pip install atlaslib
+pip install atlas-db
 ```
 
 ## Explore
