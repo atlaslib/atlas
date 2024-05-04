@@ -1,6 +1,6 @@
 [project]
-name = "atlaslib"
-version = "0.2.5"
+name = "atlas-cli"
+version = "0.2.6"
 description = "turn apple health export.xml into parquet"
 readme = "README.md"
 requires-python = ">=3.8"
