@@ -1,13 +1,13 @@
 
 <div align="center">
-  <img alt="expanse"
+  <img alt="Atlas"
        height="320px"
        src="https://github.com/tosh/expanse/assets/14825/0f766786-31c9-434e-ae65-66cf7331a27b">
 </div>
 
-# expanse
+# Atlas
 
-Expanse lets you explore your Apple Health data.
+Atlas lets you explore your Apple Health data.
 
 ---
 
@@ -18,10 +18,9 @@ Expanse lets you explore your Apple Health data.
 
 ## Installation
 
-Install expanse using `pipx`:
+Install expanse using `pip`:
 ```bash
-brew install pipx
-pipx install expanse
+pip install atlaslib
 ```
 
 ## Explore
@@ -29,7 +28,7 @@ pipx install expanse
 First we create the `.parquet` file from the `export.xml` file.
 
 ```bash
-expanse parquet export.xml -o ah.parquet
+atlas parquet export.xml -o ah.parquet
 ```
 
 We can explore the data in many ways.
