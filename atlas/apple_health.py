@@ -144,7 +144,7 @@ def to_df(file_path):
     print("- sort: newest data first", end="")
     sys.stdout.flush()
 
-    df = df.sort("start", descending=True)
+    df = df.sort("type").sort("start", descending=True)
 
     last_time = time.time()
     elapsed_time = last_time - start_time
