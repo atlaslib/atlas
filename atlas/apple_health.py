@@ -158,5 +158,5 @@ def to_df(file_path):
 
 
 def write_parquet(df, path=None):
-    df.write_parquet(path, compression="snappy")
+    df.write_parquet(path, compression="zstd", compression_level=22)
     return
