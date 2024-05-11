@@ -35,6 +35,9 @@ pipx uninstall expanse
 
 ## Explore
 
+> [!NOTE]  
+> Here is a [Quarto notebook](https://github.com/atlaslib/atlas/blob/main/examples/apple-health-exploration-clickhouse-chdb-altair-quarto/index.qmd) with example code and SQL queries for generating Vega-Altair charts
+
 First we create the `.parquet` file from the `export.xml` file.
 
 ```bash
