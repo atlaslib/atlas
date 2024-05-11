@@ -1,0 +1,488 @@
+# Apple Health Exploration with ClickHouse (chDB), Altair and Quarto
+
+### Install libs
+```{python}
+!pip install chdb
+!pip install altair
+!pip install polars
+!pip install pyarrow
+```
+
+### Parquet path
+```{python}
+apple_health_parquet = "ah.parquet"
+```
+
+### Imports
+```{python}
+import altair as alt
+import pyarrow as pa
+import chdb
+from chdb.session import Session
+```
+
+### Create Database
+```{python}
+db = Session()
+db.query("CREATE DATABASE db")
+db.query("USE db")
+```
+
+### Drop Table (if exists)
+```{python}
+db.query("drop table if exists db.ah")
+```
+
+### Create Table from Parquet
+```{python}
+create_table = f"""
+CREATE TABLE ah
+ENGINE = MergeTree
+ORDER BY tuple() AS
+SELECT *
+FROM file('{apple_health_parquet}', Parquet)
+"""
+
+db.query(create_table)
+```
+
+### Describe Table
+```{python}
+q = "desc table ah"
+r = db.query(q, "PrettyCompactNoEscapes")
+print(r)
+```
+
+### Types
+```{python}
+r = db.query("select distinct(type) from ah")
+print(r)
+```
+
+### Distance (Walking and Running)
+```{python}
+q = """
+from ah
+select sum(toFloat64(value)) as val,
+toString(date(end)) as cdate
+where type == 'DistanceWalkingRunning'
+group by cdate
+order by cdate
+"""
+s = chdb.to_df(db.query(q, "Arrow"))
+
+c = (
+    alt.Chart(s, title="distance over time")
+    .mark_point()
+    .encode(
+        alt.X("cdate:T").axis(format="%Y", labelAngle=-45).title("days"),
+        alt.Y("val").axis(format=".2s").title("distance"),
+        tooltip=["cdate:T", "val"],
+    )
+)
+c = c + c.transform_regression("cdate", "val", method="poly").mark_line(color="black")
+c.configure_mark(color="coral").properties(width=500).interactive()
+```
+
+### VO2 Max
+```{python}
+q = """
+from ah
+select toFloat64(value) as vo2max,
+toString(date(end)) as cdate
+where type == 'VO2Max'
+order by cdate
+"""
+s = chdb.to_df(db.query(q, "Arrow"))
+
+c = (
+    alt.Chart(s, title="V̇O2 max over time")
+    .mark_point()
+    .encode(
+        alt.X("cdate:T").axis(format="%Y %b", labelAngle=-45).title("days"),
+        alt.Y("vo2max").axis(format=".2s").title("vo2max").scale(zero=False),
+        tooltip=["cdate:T", "vo2max"],
+    )
+)
+c = c + c.transform_regression("cdate", "vo2max", method="poly").mark_line(
+    color="black"
+)
+c.configure_mark(color="purple").properties(width=500).interactive()
+```
+
+### Body Mass
+```{python}
+q = """
+from ah
+select sum(toFloat64(value)) as weight,
+toString(date(end)) as cdate
+where type == 'BodyMass'
+group by cdate
+having weight < 80
+order by cdate
+"""
+s = chdb.to_df(db.query(q, "Arrow"))
+
+c = (
+    alt.Chart(s, title="weight over time")
+    .mark_line(point=True)  # increased point size
+    .encode(
+        alt.X("cdate:T").axis(format="%Y %b", labelAngle=-45).title("days"),
+        alt.Y("weight").axis(format=".2s").title("weight (kg)").scale(zero=False),
+        tooltip=["cdate:T", "weight"],
+    )
+)
+c.configure_mark(color="black").properties(width=500).configure_point(
+    size=80
+).interactive()
+```
+
+### Cycling
+```{python}
+q = """
+from ah
+select sum(toFloat64(value)) as distance,
+toString(toStartOfDay(end)) as cdate
+where type == 'DistanceCycling'
+and created is not null
+group by cdate
+order by cdate
+"""
+s = db.query(q, "dataframe")
+
+alt.Chart(s, title="cycling distance over time").mark_point().encode(
+    alt.X("cdate:T").axis(format="%Y %b", labelAngle=-45).title("days"),
+    alt.Y("distance").axis(format=".2s").title("distance"),
+    tooltip=["cdate:T", "distance"],
+).configure_mark(color="coral").properties(width=500).interactive()
+```
+
+### Wrist Temperature during Sleep
+```{python}
+q = """
+from ah
+select toFloat64(value) as temp,
+end as cdate
+where type == 'AppleSleepingWristTemperature'
+order by cdate
+"""
+s = chdb.to_df(db.query(q, "Arrow"))
+
+c = (
+    alt.Chart(s, title="wrist temperature over time")
+    .mark_point()
+    .encode(
+        alt.X("yearmonthdate(cdate):T")
+        .axis(format="%Y %b", labelAngle=-45)
+        .title("days"),
+        alt.Y(
+            "temp",
+        )
+        .axis(format=".4s")
+        .title("temperature")
+        .scale(zero=False),
+        tooltip=["cdate:T", "temp"],
+    )
+)
+c = c + c.transform_regression("cdate", "temp", method="poly").mark_line(color="black")
+c.configure_mark(color="green").properties(width=500).interactive()
+```
+
+### Sleep Duration and State
+```{python}
+import polars as pl
+
+q = """
+from ah
+select toString(value) as val,
+start,
+end
+where type == 'SleepAnalysis'
+and toYearWeek(end) = toYearWeek(now())-5
+order by end desc
+"""
+s = chdb.to_df(db.query(q, "Arrow"))
+df = pl.from_pandas(s)
+
+# duration is end - start
+df = df.with_columns(
+    pl.col("end").sub(pl.col("start")).dt.total_seconds().alias("duration")
+)
+
+# add date column based on truncated end
+df = df.with_columns(pl.col("end").dt.date().alias("date"))
+
+# order by start desc
+df = df.sort("start", descending=True)
+
+category_names = {
+    "HKCategoryValueSleepAnalysisAwake": "Awake",
+    "HKCategoryValueSleepAnalysisAsleepCore": "Light Sleep",
+    "HKCategoryValueSleepAnalysisAsleepDeep": "Deep Sleep",
+    "HKCategoryValueSleepAnalysisAsleepREM": "REM Sleep",
+}
+
+category_colors = {
+    "HKCategoryValueSleepAnalysisAwake": "#FFA500",  # Orange
+    "HKCategoryValueSleepAnalysisAsleepCore": "#AEC7E8",  # Light Blue
+    "HKCategoryValueSleepAnalysisAsleepDeep": "#4169E1",  # Dark Blue
+    "HKCategoryValueSleepAnalysisAsleepREM": "#00008B",  # Navy Blue
+}
+
+c = (
+    alt.Chart(df.to_pandas(), title="sleep duration over time")
+    .mark_bar(size=16)
+    .encode(
+        alt.X("date:T").axis(format="%Y %b %d", labelAngle=-45).title("days"),
+        alt.Y(
+            "duration:Q",
+        )
+        .axis(format=".2s")
+        .title("duration (s)")
+        .scale(domain=[0, 35000]),
+        color=alt.Color(
+            "val:N",
+            scale=alt.Scale(
+                domain=list(category_colors.keys()),
+                range=list(category_colors.values()),
+            ),
+            legend=alt.Legend(
+                title="Sleep State",
+                labelExpr="{'HKCategoryValueSleepAnalysisAwake': 'Awake', 'HKCategoryValueSleepAnalysisAsleepCore': 'Light Sleep', 'HKCategoryValueSleepAnalysisAsleepDeep': 'Deep Sleep', 'HKCategoryValueSleepAnalysisAsleepREM': 'REM Sleep'}[datum.label]",
+                values=list(category_names.keys()),
+                symbolFillColor="black",
+                symbolSize=200,
+            ),
+        ),
+        order=alt.Order("val", sort="ascending"),
+        tooltip=[
+            "date:T",
+            alt.Tooltip("val:N", title="Sleep State"),
+            alt.Tooltip("duration:Q", title="Duration"),
+        ],
+    )
+)
+c
+```
+
+## Environmental Audio Exposure
+```{python}
+q = """
+from ah
+select toString(toStartOfDay(end)) as cdate,
+toFloat64(value) as audio
+where type == 'EnvironmentalAudioExposure'
+and toYear(end) = 2024
+order by cdate
+limit 5000
+"""
+s = chdb.to_df(db.query(q, "Arrow"))
+
+c = (
+    (
+        alt.Chart(s, title="🚜 Environmental Audio Exposure")
+        .mark_point(color="orange")
+        .encode(
+            alt.X(
+                "cdate:T",
+                axis=alt.Axis(format="%Y %b", labelAngle=-45),
+                title="days",
+            ),
+            alt.Y("audio:Q").axis(title="Audio Exposure (dB)"),
+            tooltip=[
+                alt.Tooltip("cdate:T", title="date"),
+                alt.Tooltip("audio:Q", title="audio exposure (dB)"),
+            ],
+        )
+    )
+    .properties(width=500)
+    .interactive()
+)
+c = c + alt.Chart().mark_rule(color="red", size=2).encode(y=alt.datum(75))
+c
+```
+
+## Calories Burned
+
+```{python}
+q = """
+from ah
+select type,
+sum(toFloat64(value)) as calories,
+toString(date(end)) as cdate
+where type in ('ActiveEnergyBurned', 'BasalEnergyBurned')
+and toYear(end) = 2021
+and toMonth(end) in (10)
+group by cdate, type
+order by cdate
+"""
+s = chdb.to_df(db.query(q, "Arrow"))
+
+c = (
+    alt.Chart(s, title="🔥 Calories Burned")
+    .mark_bar(size=8)
+    .encode(
+        alt.X("cdate:T").axis(format="%Y %b %d", labelAngle=-45).title("days"),
+        alt.Y("calories:Q").axis(format=".2s").title("kcal"),
+        color=alt.condition(
+            alt.datum.type == "ActiveEnergyBurned", alt.value("red"), alt.value("blue")
+        ),
+        order=alt.Order("type", sort="descending"),
+        tooltip=["cdate:T", "calories"],
+    )
+)
+c = c.properties(width=500).interactive()
+c
+```
+
+## Caffeine
+```{python}
+q = """
+from ah
+select toString(toStartOfDay(end)) as cdate,
+sum(toFloat64(value)) as caffeine
+where type == 'DietaryCaffeine'
+and toYear(end) = 2023 and toMonth(end) in (1, 2)
+group by cdate
+order by cdate
+"""
+s = chdb.to_df(db.query(q, "Arrow"))
+
+c = (
+    (
+        alt.Chart(s, title="☕️ Caffeine")
+        .mark_bar()
+        .encode(
+            alt.X("cdate:T").axis(format="%Y %b %d", labelAngle=-45).title("days"),
+            alt.Y("caffeine:Q").axis(title="caffeine (mg)"),
+            tooltip=[
+                alt.Tooltip("cdate:T", title="date"),
+                alt.Tooltip("caffeine:Q", title="caffeine (mg)"),
+            ],
+            color=alt.value("black"),
+        )
+    )
+    .properties(width=500)
+    .interactive()
+)
+c
+```
+
+### Caffeine Heatmap
+```{python}
+q = """
+from ah
+select toString(toStartOfDay(end)) as cdate,
+sum(toFloat64(value)) as caffeine
+where type == 'DietaryCaffeine'
+and toYear(end) = 2023
+and toMonth(end) in (1, 2)
+group by cdate
+order by cdate
+"""
+s = chdb.to_df(db.query(q, "Arrow"))
+
+c = (
+    alt.Chart(s, title="☕️ Coffee Heatmap (2023 Jan-Feb)")
+    .mark_rect()
+    .encode(
+        alt.X("date(cdate):O").axis(format="%d", labelAngle=-45).title("days"),
+        alt.Y("month(cdate):O").title("month"),
+        color=alt.Color("max(caffeine):Q", scale=alt.Scale(scheme="greys")).title(
+            "Caffeine (mg)"
+        ),
+        tooltip=[alt.Tooltip("date(cdate):T", title="date")],
+    )
+    .properties(width=500)  # added padding for whitespace
+    .interactive()
+)
+c
+```
+
+### Caffeine after 17:00
+```{python}
+q = """
+from ah
+select toString(toStartOfDay(end)) as cdate,
+sum(toFloat64(value)) as caffeine,
+toHour(max(end)) > 17 as late
+where type == 'DietaryCaffeine'
+and toYear(end) = 2023
+and toMonth(end) in (1, 2)
+group by cdate
+order by cdate
+"""
+s = chdb.to_df(db.query(q, "Arrow"))
+
+c = (
+    alt.Chart(s, title="☕️ Coffee after 17:00 (2023 Jan-Feb)")
+    .mark_rect()
+    .encode(
+        alt.X("date(cdate):O").axis(format="%d", labelAngle=-45).title("days"),
+        alt.Y("month(cdate):O").title("month"),
+        color=alt.Color(
+            "late:N", scale=alt.Scale(domain=[0, 1], range=["lightgrey", "red"])
+        ).title("Late?"),
+        tooltip=[alt.Tooltip("date(cdate):T", title="date")],
+    )
+    .properties(width=500)
+    .interactive()
+)
+c
+```
+
+### Step Count Heatmap
+```{python}
+q = """
+from ah
+select toString(toStartOfDay(end)) as cdate,
+sum(toFloat64(value)) as steps
+where type == 'StepCount' and toYear(end) = 2023
+group by cdate
+order by cdate
+"""
+s = chdb.to_df(db.query(q, "Arrow"))
+
+c = (
+    alt.Chart(s, title="👣 Step Count (2023)")
+    .mark_rect()
+    .encode(
+        alt.X("date(cdate):O").axis(format="%d", labelAngle=-45).title("days"),
+        alt.Y("month(cdate):O").title("month"),
+        color=alt.Color("sum(steps):Q", scale=alt.Scale(scheme="greens")).title(
+            "Steps"
+        ),
+        tooltip=[alt.Tooltip("date(cdate):T", title="date")],
+    )
+    .properties(width=500)
+    .interactive()
+)
+c
+```
+
+### Last Swimming Workout
+```{python}
+q = """
+from ah
+select max(start) 
+where type = 'DistanceSwimming';
+"""
+
+s = db.query(q, "PrettyCompactNoEscapes")
+print(s)
+```
+
+### Swimming Workouts
+```{python}
+q = """
+from ah
+select toString(toStartOfWeek(end)) as week,
+count(type) > 0 as had_swimming_workout
+where type = 'DistanceSwimming'
+group by week
+order by week
+"""
+
+s = db.query(q, "PrettyCompactNoEscapes")
+print(s)
+```
